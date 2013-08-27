@@ -1,22 +1,40 @@
 package main
 
-import(
-  "jimmiebtlr/alg"
-  "math"
+import (
+	"jimmiebtlr/alg"
+	"log"
 )
 
-struct BasicNode type{
-  x float64
-  y float64
-}
+func main() {
+	n1 := alg.NewNode()
+	n1.X = 1
+	n1.Y = 2
 
-func (n *BasicNode)TraversalCost( node *alg.Node ){
-  return math.Pow(node.X -n.X,2) + math.Pow( node.Y - n.Y ,2 )
-}
+	n2 := alg.NewNode()
+	n2.X = 3
+	n2.Y = 3
 
-func main(){
-  nodes := {
-    Node
+	n3 := alg.NewNode()
+	n3.X = 4
+	n3.Y = 4
 
-  //bfs := Bfs{}
+	n4 := alg.NewNode()
+	n4.X = 5
+	n4.Y = 5
+
+	n5 := alg.NewNode()
+	n5.X = 10
+	n5.Y = 20
+
+	n1.AddAdjNode(&n2)
+	n2.AddAdjNode(&n3)
+	n3.AddAdjNode(&n4)
+	n4.AddAdjNode(&n5)
+
+	bfs := alg.NewBfs()
+	bfs.SetStart( &n1 )
+	bfs.SetGoal( &n5 )
+  solution := bfs.Solution()
+
+  log.Println( solution )
 }

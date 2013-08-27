@@ -1,39 +1,53 @@
 package alg
 
+import (
+  "math"
+)
+
 /*
  * Basic building block for all graph traversal algorithms
  */
-struct Node interface{
-  // Cost to travel to this node
-  TraversalCost( node Node )
-
+type Node struct{
   // Contains all adjacent nodes
-  adj []Node
-  adjMap map[]bool
+  adj []*Node
+  adjMap map[*Node]bool
+  X float64
+  Y float64
 }
 
-func ( node * Node ) Adj()( nodes []Node ){
-  return adj
+func NewNode()( n Node ){
+  n.adj = make([]*Node, 0)
+  n.adjMap = make( map[*Node]bool )
+  return n
 }
 
-func ( node *Node ) AdjTo( node Node )( adjTo bool ){
-  if adjMap[ node ] == true {
+func ( node *Node ) Adj()( nodes []*Node ){
+  return node.adj
+}
+
+func ( node *Node ) AdjTo( adj Node )( adjTo bool ){
+  if node.adjMap[ &adj ] == true {
     return true
   }else{
     return false
   }
 }
 
-func ( node *Node ) AddAdjNode( node Node ){
-  append( adj, node )
-  adjMap[ node ] = true
+
+func ( node *Node ) AddAdjNode(  adjNode *Node ){
+  node.adj = append( node.adj, adjNode )
+  node.adjMap[ adjNode ] = true
+}
+
+func (n *Node)TraversalCost( node *Node )( float64 ){
+  return math.Sqrt(math.Pow(node.X -n.X,2) + math.Pow( node.Y - n.Y ,2 ))
 }
 
 /* 
  * Object to hold path data and value
  */
-struct Path type{
-  Nodes []Node
+type Path struct{
+  Nodes []*Node
 
   // Is there a better way to do the type on this?
   // Surely
@@ -43,20 +57,38 @@ struct Path type{
 /*
  * Returns the last element in nodes, representing the end of the path
  */
-func (p *Path)CurrentNode( )( node Node ){
-  return p.Nodes[:len(p.Nodes) - 1 ]
+func (p *Path)CurrentNode( )( node *Node, err error ){
+  if len( p.Nodes ) > 0 {
+    return p.Nodes[ len(p.Nodes) - 1 ], nil
+  }else{
+    return &Node{}, &pathError{"Path has no nodes" }
+  }
 }
 
-func (p *Path)AddNode( node Node )( err error ){
+type pathError struct {
+    s string
+}
+
+func (e *pathError) Error() string {
+    return e.s
+}
+
+func (p *Path)AddNode( node *Node ){
   // Look at last node, if last node has value traveling to node
   // Add it
-  p.Cost += p.CurrentNode.TraversalCost( node )
+  cn,err := p.CurrentNode()
+  if err == nil {
+    p.Cost += cn.TraversalCost( node )
+  }
+  p.Nodes = append( p.Nodes, node )
 }
 
 func (p *Path)Copy()(path Path ){
-  path := Path{
-    Nodes: p.Nodes
-    Cost: p.Cost
+  nodes := make([]*Node, len( p.Nodes ) )
+  copy( nodes, p.Nodes )
+  path = Path{
+    Nodes: nodes,
+    Cost: p.Cost,
   }
   return path
 }
