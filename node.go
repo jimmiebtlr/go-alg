@@ -13,6 +13,7 @@ type Node struct{
   adjMap map[*Node]bool
   X float64
   Y float64
+  Prev *Node
 }
 
 func NewNode()( n Node ){
@@ -43,52 +44,10 @@ func (n *Node)TraversalCost( node *Node )( float64 ){
   return math.Sqrt(math.Pow(node.X -n.X,2) + math.Pow( node.Y - n.Y ,2 ))
 }
 
-/* 
- * Object to hold path data and value
- */
-type Path struct{
-  Nodes []*Node
-
-  // Is there a better way to do the type on this?
-  // Surely
-  Cost float64
-}
-
-/*
- * Returns the last element in nodes, representing the end of the path
- */
-func (p *Path)CurrentNode( )( node *Node, err error ){
-  if len( p.Nodes ) > 0 {
-    return p.Nodes[ len(p.Nodes) - 1 ], nil
+func (n *Node) Path() ( path []*Node ){
+  if n.Prev == nil {
+    return []*Node{ n }
   }else{
-    return &Node{}, &pathError{"Path has no nodes" }
+    return append( n.Prev.Path(), n )
   }
-}
-
-type pathError struct {
-    s string
-}
-
-func (e *pathError) Error() string {
-    return e.s
-}
-
-func (p *Path)AddNode( node *Node ){
-  // Look at last node, if last node has value traveling to node
-  // Add it
-  cn,err := p.CurrentNode()
-  if err == nil {
-    p.Cost += cn.TraversalCost( node )
-  }
-  p.Nodes = append( p.Nodes, node )
-}
-
-func (p *Path)Copy()(path Path ){
-  nodes := make([]*Node, len( p.Nodes ) )
-  copy( nodes, p.Nodes )
-  path = Path{
-    Nodes: nodes,
-    Cost: p.Cost,
-  }
-  return path
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
-  "testing"
 	"jimmiebtlr/alg"
+	"testing"
 )
 
 func TestBFS(t *testing.T) {
@@ -32,23 +32,49 @@ func TestBFS(t *testing.T) {
 	n4.AddAdjNode(&n5)
 
 	bfs := alg.NewBfs()
-	bfs.SetStart( &n1 )
-	bfs.SetGoal( &n5 )
-  solution := bfs.Solution()
+	bfs.SetStart(&n1)
+	bfs.SetGoal(&n5)
+	solution, err := bfs.Solution()
 
-  if solution.Nodes[0] != &n1 {
-    t.Errorf( "The first step in the path was not correct" )
-  }
-  if solution.Nodes[1] != &n2 {
-    t.Errorf( "The second step in the path was not correct" )
-  }
-  if solution.Nodes[2] != &n3 {
-    t.Errorf( "The third step in the path was not correct" )
-  }
-  if solution.Nodes[3] != &n4 {
-    t.Errorf( "The fourth step in the path was not correct" )
-  }
-  if solution.Nodes[4] != &n5 {
-    t.Errorf( "The fifth step in the path was not correct" )
-  }
+	if err != nil {
+		t.Fatal("No solution found bf bfs path finder ")
+	}
+
+	if len(solution) != 5 {
+		t.Fatalf("The solution found was length %d but should be %d", len(solution), 5)
+	}
+
+	if solution[0] != &n1 {
+		t.Errorf("The first step in the path was not correct")
+	}
+	if solution[1] != &n2 {
+		t.Errorf("The second step in the path was not correct")
+	}
+	if solution[2] != &n3 {
+		t.Errorf("The third step in the path was not correct")
+	}
+	if solution[3] != &n4 {
+		t.Errorf("The fourth step in the path was not correct")
+	}
+	if solution[4] != &n5 {
+		t.Errorf("The fifth step in the path was not correct")
+	}
+}
+
+func TestNodePath(t *testing.T) {
+	n1 := alg.NewNode()
+	n2 := alg.NewNode()
+	n3 := alg.NewNode()
+	n4 := alg.NewNode()
+	n5 := alg.NewNode()
+
+	n2.Prev = &n1
+	n3.Prev = &n2
+	n4.Prev = &n3
+	n5.Prev = &n4
+
+	if len(n5.Path()) != 5 {
+		println(len(n5.Path()))
+		t.Errorf("The path was of length %i but should have been length %i", len(n5.Path()), 5)
+	}
 }
