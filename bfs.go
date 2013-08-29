@@ -1,80 +1,76 @@
 package alg
 
-import (
-  "log"
-)
+//import "log"
 
 type Bfs struct {
 	// Where to start, where to end<
 	start *Node
 	goal  *Node
 
-	visited  map[*Node]bool
-	frontier []Path
-  solution Path
+	frontier []*Node
 }
 
 func NewBfs() (bfs Bfs) {
-	bfs.visited = make(map[*Node]bool)
-	bfs.frontier = make([]Path, 0)
+	bfs.frontier = make([]*Node, 0)
 	return bfs
 }
 
 func( bfs *Bfs ) SetStart( n *Node ){
   bfs.start = n
-  bfs.frontier = []Path{ Path{ []*Node{n},0 } }
+  bfs.frontier = []*Node{n}
 }
 
 func( bfs *Bfs ) SetGoal( n *Node ){
   bfs.goal = n
 }
 
-func (bfs *Bfs) expandFrontier() {
-	newFrontier := make([]Path, 0)
+func (bfs *Bfs) expandFrontier() ( goalReached bool ){
+	newFrontier := make([]*Node, 0)
 
   // each path in the frontier
-	for _, path := range bfs.frontier {
-    // Select the last node from the path
-		frontNode, err := path.CurrentNode()
-		if err == nil {
-      // add each node that is adjacent to the frontier
-			for _, adj := range frontNode.Adj() {
-				//if bfs.visited[&adj] != true {
-					p := path.Copy()
-					p.AddNode(adj)
-					bfs.visited[adj] = true
-					newFrontier = append(newFrontier, p)
-				//}
+	for _, frontNode := range bfs.frontier {
+    // add each node that is adjacent to the frontier
+		for _, adj := range frontNode.Adj() {
+      if adj.Prev == nil {
+				adj.Prev = frontNode
+				newFrontier = append(newFrontier, adj)
 			}
+
+      if adj == bfs.goal {
+        return true
+      }
     }
 	}
 	bfs.frontier = newFrontier
+  return false
 }
 
-func (bfs *Bfs) solve() {
+func (bfs *Bfs) solve() ( solved bool ){
 	// While frontier is not empty and goal has not been found
-	for len(bfs.frontier) > 0 && !bfs.goalReached() {
-		// Expand the current frontier
-		bfs.expandFrontier()
+	for bfs.expandFrontier() != true && len(bfs.frontier) > 0 {
+		//bfs.expandFrontier()
 	}
+
+  // kind of hackish but works for now
+  if len( bfs.frontier ) == 0 {
+    return false
+  }else{
+    return true
+  }
 }
 
-// TODO get rid of side effect
-func (bfs *Bfs) goalReached() (goal bool) {
-	for _, path := range bfs.frontier {
-		node, err := path.CurrentNode()
-		if err == nil {
-			if node == bfs.goal {
-        log.Println( "Solution found" )
-        bfs.solution = path
-				return true
-			}
-		}
-	}
-	return false
+func (bfs *Bfs) Solution()(path []*Node, err error) {
+  if bfs.solve() {
+    return bfs.goal.Path(), nil
+  }else{
+    return []*Node{}, BfsError{"Solution could not be found for given nodes"}
+  }
 }
 
-func (bfs *Bfs) Solution()(p Path){
-  bfs.solve()
-  return bfs.solution
+type BfsError struct {
+  err string
+}
+
+func (p BfsError) Error() string {
+  return p.err
 }
