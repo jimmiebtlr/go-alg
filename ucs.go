@@ -6,9 +6,9 @@ import (
 
 type Ucs struct {
 	// Where to start, where to end<
-	start *Node
-	goal  *Node
-  solved bool
+	start  *Node
+	goal   *Node
+	solved bool
 
 	frontier *NodeHeap
 }
@@ -36,13 +36,13 @@ func (n *NodeHeap) Pop() interface{} {
 func NewUcs() (ucs Ucs) {
 	ucs.frontier = &NodeHeap{}
 	heap.Init(ucs.frontier)
-  ucs.solved = false
+	ucs.solved = false
 	return ucs
 }
 
 func (ucs *Ucs) SetStart(n *Node) {
 	ucs.start = n
-  ucs.start.PathCost = 0
+	ucs.start.PathCost = 0
 	heap.Push(ucs.frontier, n)
 }
 
@@ -51,31 +51,31 @@ func (ucs *Ucs) SetGoal(n *Node) {
 }
 
 func (ucs *Ucs) expandFrontNode() (goalReached bool) {
-  frontNode := ucs.frontier.Pop().(*Node)
+	frontNode := ucs.frontier.Pop().(*Node)
 
 	if ucs.goal == frontNode {
-    ucs.solved = true
+		ucs.solved = true
 		return true
 	}
 
 	for _, adj := range frontNode.Adj() {
-		if adj.PathCost > ( frontNode.PathCost + frontNode.TraversalCost(adj) ) {
+		if adj.PathCost > (frontNode.PathCost + frontNode.TraversalCost(adj)) {
 			adj.Prev = frontNode
-			adj.PathCost = frontNode.PathCost + frontNode.TraversalCost( adj )
-      ucs.frontier.Push( adj )
+			adj.PathCost = frontNode.PathCost + frontNode.TraversalCost(adj)
+			ucs.frontier.Push(adj)
 		}
-  }
+	}
 	return false
 }
 
 func (ucs *Ucs) solve() (solved bool) {
 	// While frontier is not empty and goal has not been found
-  // TODO: This seems dirty, I hate side effects
+	// TODO: This seems dirty, I hate side effects
 	for ucs.expandFrontNode() != true && ucs.frontier.Len() > 0 {
 		//bfs.expandFrontier()
 	}
 
-  return ucs.solved
+	return ucs.solved
 }
 
 func (ucs *Ucs) Solution() (path []*Node, err error) {
@@ -85,7 +85,6 @@ func (ucs *Ucs) Solution() (path []*Node, err error) {
 		return []*Node{}, UcsError{"Solution could not be found for given nodes"}
 	}
 }
-
 
 type UcsError struct {
 	err string
