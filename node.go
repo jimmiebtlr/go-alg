@@ -4,6 +4,8 @@ import (
   "math"
 )
 
+// TODO: turn this into an interface
+
 /*
  * Basic building block for all graph traversal algorithms
  */
@@ -14,11 +16,13 @@ type Node struct{
   X float64
   Y float64
   Prev *Node
+  PathCost float64
 }
 
 func NewNode()( n Node ){
   n.adj = make([]*Node, 0)
   n.adjMap = make( map[*Node]bool )
+  n.PathCost = math.MaxFloat64
   return n
 }
 
