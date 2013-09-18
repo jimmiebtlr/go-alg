@@ -11,12 +11,13 @@ import (
  */
 type Node struct {
 	// Contains all adjacent nodes
-	adj      []*Node
-	adjMap   map[*Node]bool
-	X        float64
-	Y        float64
-	Prev     *Node
-	PathCost float64
+	adj            []*Node
+	adjMap         map[*Node]bool
+	X              float64
+	Y              float64
+	Prev           *Node
+	PathCost       float64
+	HieuristicCost float64
 }
 
 func NewNode() (n Node) {
@@ -24,6 +25,10 @@ func NewNode() (n Node) {
 	n.adjMap = make(map[*Node]bool)
 	n.PathCost = math.MaxFloat64
 	return n
+}
+
+func (node *Node) CalcHieuristic(goal *Node) {
+	node.HieuristicCost = math.Sqrt(math.Pow(node.X-goal.X, 2) + math.Pow(node.Y-goal.Y, 2))
 }
 
 func (node *Node) Adj() (nodes []*Node) {

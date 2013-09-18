@@ -10,22 +10,22 @@ type Ucs struct {
 	goal   *Node
 	solved bool
 
-	frontier *NodeHeap
+	frontier *UcsNodeHeap
 }
 
-type NodeHeap []*Node
+type UcsNodeHeap []*Node
 
-func (n NodeHeap) Len() int           { return len(n) }
-func (n NodeHeap) Less(i, j int) bool { return n[i].PathCost < n[j].PathCost }
-func (n NodeHeap) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+func (n UcsNodeHeap) Len() int           { return len(n) }
+func (n UcsNodeHeap) Less(i, j int) bool { return n[i].PathCost < n[j].PathCost }
+func (n UcsNodeHeap) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
 
-func (n *NodeHeap) Push(x interface{}) {
+func (n *UcsNodeHeap) Push(x interface{}) {
 	// Push and Pop use pointer receivers because they modify the slice's length,
 	// not just its contents.
 	*n = append(*n, x.(*Node))
 }
 
-func (n *NodeHeap) Pop() interface{} {
+func (n *UcsNodeHeap) Pop() interface{} {
 	old := *n
 	length := len(old)
 	x := old[length-1]
@@ -34,7 +34,7 @@ func (n *NodeHeap) Pop() interface{} {
 }
 
 func NewUcs() (ucs Ucs) {
-	ucs.frontier = &NodeHeap{}
+	ucs.frontier = &UcsNodeHeap{}
 	heap.Init(ucs.frontier)
 	ucs.solved = false
 	return ucs
